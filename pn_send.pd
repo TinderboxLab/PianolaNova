@@ -17,7 +17,7 @@
 #X msg 74 169 99 98 97;
 #X obj 73 266 tcpsend;
 #X obj 25 33 declare -path ./externals/mrpeach;
-#X msg 25 73 connect localhost 9997;
+#X msg 25 73 connect 172.20.10.8 9997;
 #X connect 0 0 13 0;
 #X connect 3 0 13 0;
 #X connect 4 0 13 0;
