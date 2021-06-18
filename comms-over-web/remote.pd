@@ -1,0 +1,48 @@
+#N canvas 2517 53 869 595 10;
+#X text 462 210 Close the connection;
+#X text 481 289 creation arguments:;
+#X text 549 308 optional -u flag for UDP;
+#X text 549 327 optional -b flag for binary;
+#X text 419 236 Send messages to "foo" on remote machine;
+#X msg 366 210 disconnect;
+#X floatatom 366 315 0 0 0 0 - - -;
+#X floatatom 383 236 0 0 0 0 - - -;
+#X msg 383 263 send 1 2 3 \$1;
+#X obj 366 288 netsend -u -b;
+#X obj 440 318 print backward;
+#X text 616 157 an additional port argument;
+#X text 618 189 messages sent back from receiver;
+#X text 616 173 specifies port number for;
+#X text 621 99 Connect to [local.pd] on the other \; computer over
+the internet;
+#X msg 366 98 connect (remote_router_IP_address) 9055;
+#X text 57 222 That is the address you need to put \; in the connect
+message over there..>>>>> \; in place of (remote_router_IP_address)
+;
+#X text 56 394 If you want to receive messages back \; You need to
+follow the instructions in \; [local.pd] for the return port number....
+\; do all that for this computer.;
+#X text 133 15 THIS COMPUTER CAN SEND TO THE LOCAL COMPUTER..... BUT
+NOT DIRECTLY. IT WILL SEND TO THE ROUTER THAT IS SERVING THE "LOCAL"
+COMPUTER AND THAT ROUTER WILL "ROUTE" THE MESSAGES \; TO THE "LOCAL"
+COMPUTER..... SEE [local.pd];
+#X text 57 99 On your local computer.... not this one \; ask "Google"
+for \; "My IP address" \; It will match \; the address shown at the
+bottom of \; your profile in this forum...... \; It will be something
+like..... \; 202.40.88.108;
+#X msg 386 171 connect localhost 9055 9056;
+#X text 57 282 If your ISP has fixed your address \; then great.....
+it will probably \; never change. \; If not you will need to register
+with \; a service like \; DYNDNS which will allow you to look for \;
+the local router by name (DNS lookup).;
+#X text 59 471 If you just want to send you only need \; to allow Pd.exe
+to connect to "public" \; networks (through the firewall) on this \;
+computer (at least for port 9055 and 9065 \; if you want to send back)
+;
+#X connect 5 0 9 0;
+#X connect 7 0 8 0;
+#X connect 8 0 9 0;
+#X connect 9 0 6 0;
+#X connect 9 1 10 0;
+#X connect 15 0 9 0;
+#X connect 20 0 9 0;
