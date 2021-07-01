@@ -1,0 +1,6 @@
+#N canvas 200 494 450 300 12;
+#X msg 82 27 print 8c 123;
+#X msg 250 66 open 9;
+#X obj 133 130 comport 9 9600;
+#X connect 0 0 2 0;
+#X connect 1 0 2 0;
