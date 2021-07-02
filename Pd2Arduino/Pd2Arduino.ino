@@ -1,42 +1,21 @@
-/* This program allows you to set DMX channels over the serial port.
-**
-** After uploading to Arduino, switch to Serial Monitor and set the baud rate
-** to 9600. You can then set DMX channels using these commands:
-**
-** <number>c : Select DMX channel
-** <number>v : Set DMX channel to new value
-**
-** These can be combined. For example:
-** 100c355w : Set channel 100 to value 255.
-**
-** For more details, and compatible Processing sketch,
-** visit http://code.google.com/p/tinkerit/wiki/SerialToDmx
-**
-** Help and support: http://groups.google.com/group/dmxsimple       */
-
+int incomingByte = 0; // for incoming serial data
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println("Ready");
+  Serial.begin(9600); // opens serial port, sets data rate to 9600 bps
 }
 
-int value = 0;
-int channel;
-
 void loop() {
-  int c;
+  // send data only when you receive data:
+  if (Serial.available() > 0) {
+    // read the incoming byte:
+    incomingByte = Serial.read();
 
-  while(!Serial.available());
-  Serial.println("Serial");
-  c = Serial.read();
-  
-  if ((c>='0') && (c<='9')) {
-    value = 10*value + c - '0';
-  } else {
-    if (c=='c') channel = value;
-    else if (c=='w') {
-      Serial.println("Hello2");
+    if (incomingByte == 49) {
+      Serial.println("ON");
+    } else if (incomingByte == 48) {
+      Serial.println("OFF");
+    } else {
+      Serial.println("something else");
     }
-    value = 0;
   }
 }

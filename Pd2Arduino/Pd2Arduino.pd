@@ -1,0 +1,36 @@
+#N canvas 22 512 741 401 12;
+#X msg 122 130 print 8c 123;
+#X obj 234 247 comport 2 9600;
+#X msg 234 170 verbose \$1;
+#X obj 234 147 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X msg 234 195 devices;
+#X msg 322 170 close;
+#X msg 378 171 ports;
+#X obj 329 285 route port open ports;
+#X obj 425 321 print port_list;
+#X msg 307 195 devicename /dev/cu.usbmodem14101;
+#X msg 279 132 print 1;
+#X msg 348 133 print 0;
+#X obj 279 110 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 348 110 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 299 73 sel 1 0;
+#X obj 324 35 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X connect 0 0 1 0;
+#X connect 1 1 7 0;
+#X connect 2 0 1 0;
+#X connect 3 0 2 0;
+#X connect 4 0 1 0;
+#X connect 5 0 1 0;
+#X connect 6 0 1 0;
+#X connect 7 2 8 0;
+#X connect 9 0 1 0;
+#X connect 10 0 1 0;
+#X connect 12 0 10 0;
+#X connect 13 0 11 0;
+#X connect 14 0 12 0;
+#X connect 14 1 13 0;
+#X connect 15 0 14 0;
