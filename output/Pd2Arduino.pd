@@ -1,4 +1,4 @@
-#N canvas 1808 531 741 401 12;
+#N canvas 495 155 1676 1156 12;
 #X obj 234 300 comport 2 9600;
 #X msg 88 145 devices;
 #X msg 541 241 close;
@@ -13,7 +13,7 @@
 #X obj 148 119 loadbang;
 #X msg 148 145 verbose 1;
 #X text 316 72 trigger the solenoids with the 'a' and 's' keys;
-#N canvas 2703 268 450 300 macbook_usb_ports 0;
+#N canvas 2703 268 450 224 macbook_usb_ports 0;
 #X obj 47 40 inlet;
 #X obj 93 40 inlet;
 #X msg 47 83 devicename /dev/cu.usbmodem14201;
@@ -33,6 +33,13 @@
 #X text 448 158 Top USB;
 #X text 532 157 Bottom USB;
 #X msg 451 242 open 3;
+#N canvas 179 611 450 224 something 0;
+#X obj 18 11 inlet;
+#X obj 26 227 outlet;
+#X msg 23 113 open 3;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
+#X restore 557 312 pd something;
 #X connect 1 0 0 0;
 #X connect 2 0 0 0;
 #X connect 3 0 0 0;
@@ -46,5 +53,7 @@
 #X connect 10 0 0 0;
 #X connect 12 0 0 0;
 #X connect 13 0 12 0;
+#X connect 13 0 18 0;
 #X connect 14 0 12 1;
 #X connect 17 0 0 0;
+#X connect 18 0 0 0;
