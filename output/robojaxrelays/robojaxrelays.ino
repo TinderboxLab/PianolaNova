@@ -1,8 +1,8 @@
 // robojax code
 int led = 13; // arduino test led
-const int E = 24; // enable mux
+const int E = 2; // enable mux
 //const int SIG = 26; // LOW level signal to mux for relay
-const int controlPin[4] = {10, 11, 12, 22};
+const int controlPin[4] = {3, 4, 5, 6};
 
 //int loopDelay = 1000; // delay in loop
 
@@ -35,11 +35,11 @@ void setup() {
 
   pinMode(E, OUTPUT);
   digitalWrite(E, HIGH); // low enables mux en pin 
-
+    
   for(int i=0; i<4; i++)
   {
-    pinMode(controlPin[i], OUTPUT); // set all signal pins to output
     digitalWrite(controlPin[i], HIGH); // high for low trigger relay
+    pinMode(controlPin[i], OUTPUT); // set all signal pins to output
   }
 
   pinMode(led, OUTPUT); // test LED  
@@ -99,7 +99,7 @@ void loop() {
       digitalWrite(E, LOW);
       //digitalWrite(SIG, HIGH); // low for low trigger relays
       
-      channelControl(4); // chooses number in muxtable for control pins
+      channelControl(2); // chooses number in muxtable for control pins
       //Serial.println("Channel Control 2 on");
  
       digitalWrite(led, HIGH); 
