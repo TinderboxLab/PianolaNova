@@ -7,6 +7,7 @@ const int controlPin[4] = {3, 4, 5, 6};
 //int loopDelay = 1000; // delay in loop
 
 int incomingByte = 0; // for incoming serial data
+int soleTrig[] = {0,1}; // for LDR to solenoid trigger, removing serial data
 
 const int muxTable[16][4] = {
  //s0, s1, s2, s3
