@@ -63,7 +63,7 @@ function initialize() {
         // can we use this to work out if there is already a peer and then subscribe instead?
         console.log(err);
         // alert('' + err);
-        if (err.includes("is taken")) console.log("id is taken");
+        if (err.message.includes("is taken")) console.log("id is taken");
     });
 };
 
