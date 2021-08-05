@@ -1,6 +1,7 @@
 var lastPeerId = null;
 var peer = null; // Own peer object
 var peerId = "c5dwqeqqb2808-e7ea-4a3f-82eb-a8a8bb905eea";
+var firstPeerCreated = false;
 var conn = null;
 var status = document.getElementById("status");
 var message = document.getElementById("message");
@@ -61,7 +62,8 @@ function initialize() {
     peer.on('error', function (err) {
         // can we use this to work out if there is already a peer and then subscribe instead?
         console.log(err);
-        alert('' + err);
+        // alert('' + err);
+        if (err.includes("is taken")) console.log("id is taken");
     });
 };
 
