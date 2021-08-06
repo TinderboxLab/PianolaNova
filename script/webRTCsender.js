@@ -8,6 +8,31 @@ var sendMessageBox = document.getElementById("sendMessageBox");
 var sendButton = document.getElementById("sendButton");
 var clearMsgsButton = document.getElementById("clearMsgsButton");
 
+import { MIDI } from "./MIDI.js";
+var midiDevice = null;
+var midi = new MIDI(handleMidiEvent); 
+/**
+ * Initialise MIDI and define handlers for locol MIDI events
+ */
+midi.initialize().then(() => {
+    console.log("initialised")
+    console.log(midi.inputs)
+    console.log(midi.outputs)
+})
+
+function handleMidiEvent({ device, type, a, b }) {
+    console.log(device.type, type)
+    midiDevice = device;
+    let msg = "mid" + device.type + " " + type
+    if (conn) conn.send(msg);
+    console.log("Sent: " + msg)
+    addMessage("<span class=\"selfMsg\">Self: </span>" + msg);
+}
+
+function sendMidiEvent(data){
+    sendEvent(midiDevice, data)
+}
+
 /**
  * Create the Peer object for our end of the connection.
  *
