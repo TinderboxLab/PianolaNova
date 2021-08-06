@@ -23,9 +23,11 @@ midi.initialize().then(() => {
 })
 
 function handleMidiEvent({ device, type, a, b }) {
-    console.log(device.type, type)
+    console.log(device.type, type, a, b)
     midiDevice = device;
-    let msg = "mid" + device.type + " " + type
+    let msgA = a? " " + a.type + ":" + a.value : "";
+    let msgB = b? " " + b.type + ":" + b.value : "";
+    let msg = "midi " + device.type + " " + type + msgA + msgB; 
     if (conn) conn.send(msg);
     console.log("Sent: " + msg)
     addMessage("<span class=\"selfMsg\">Self: </span>" + msg);
