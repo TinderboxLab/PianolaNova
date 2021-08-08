@@ -21,8 +21,11 @@ midi.initialize().then(() => {
     console.log(midi.outputs)
 })
 
-function handleMidiEventFromLocal( device, data ) {
-    sendMidiEventToRemote(data);
+function handleMidiEventFromLocal( device, midiMessage ) {
+    if (midiMessage) {
+        var data = [].slice.call(midiMessage)
+        sendMidiEventToRemote(data);
+    }
 }
 
 function sendMidiEventToLocal(data) {
