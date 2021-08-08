@@ -45,6 +45,7 @@ function sendMidiEventToLocal(data) {
 
 function handleMidiEventFromRemote(data) {
     sendMidiEventToLocal(data)
+    addMessage("<span class=\"peerMsg\">Peer Midi: </span>" + data);
 }
 
 function sendMidiEventToRemote(data) {
@@ -137,8 +138,12 @@ function join() {
     });
     // Handle incoming data (messages only since this is the signal sender)
     conn.on('data', function (data) {
-        handleMidiEventFromRemote(data);
-        addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+        if (typeof(data)=== "string") {
+            addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+        } 
+        else if (typeof(data)=== "object") {
+            handleMidiEventFromRemote(data);
+        }       
     });
     conn.on('close', function () {
         status.innerHTML = "Connection closed";

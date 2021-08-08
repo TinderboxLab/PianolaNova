@@ -45,6 +45,7 @@ function sendMidiEventToLocal(data) {
 
 function handleMidiEventFromRemote(data) {
     sendMidiEventToLocal(data)
+    addMessage("<span class=\"peerMsg\">Peer Midi: </span>" + data);
 }
 
 function sendMidiEventToRemote(data) {
@@ -125,9 +126,12 @@ function initialize() {
  */
 function ready() {
     conn.on('data', function (data) {
-        console.log("Data recieved");
-        handleMidiEventFromRemote(data);
-        addMessage("<span class=\"peerMsg\">Peer: </span>" + data);
+        if (typeof(data)=== "string") {
+            addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+        } 
+        else if (typeof(data)=== "object") {
+            handleMidiEventFromRemote(data);
+        } 
     });
     conn.on('close', function () {
         status.innerHTML = "Connection reset<br>Awaiting connection...";
