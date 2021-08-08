@@ -11,7 +11,7 @@ var clearMsgsButton = document.getElementById("clearMsgsButton");
 var testMidiButton = document.getElementById("testMidi");
 
 
-import { MIDI } from "./MIDI.js";
+import { MIDI, MIDIEvent } from "./MIDI.js";
 var midi = new MIDI(handleMidiEventFromLocal); 
 /**
  * Initialise MIDI and define handlers for locol MIDI events
@@ -22,16 +22,6 @@ midi.initialize().then(() => {
     console.log(midi.outputs)
 })
 
-// function handleMidiEventFromLocal({ device, type, a, b }) {
-//     console.log(device.type, type, a, b)
-//     localMidiDeviceOut = device;
-//     let msgA = a? " " + a.type + ":" + a.value : "";
-//     let msgB = b? " " + b.type + ":" + b.value : "";
-//     let msg = "midi " + device.type + " " + type + msgA + msgB; 
-//     if (conn) conn.send(msg);
-//     console.log("Sent: " + msg)
-//     addMessage("<span class=\"selfMsg\">Self: </span>" + msg);
-// }
 function handleMidiEventFromLocal( device, data ) {
     sendMidiEventToRemote(data);
 }
@@ -45,7 +35,8 @@ function sendMidiEventToLocal(data) {
 
 function handleMidiEventFromRemote(data) {
     sendMidiEventToLocal(data)
-    addMessage("<span class=\"peerMsg\">Peer Midi: </span>" + data);
+    const msg = describeData(data);
+    if (msg) addMessage("<span class=\"peerMsg\">Peer Midi: </span>" + msg);
 }
 
 function sendMidiEventToRemote(data) {
@@ -54,7 +45,15 @@ function sendMidiEventToRemote(data) {
     } else {
         console.log('Connection is closed');
     }
-    addMessage("<span class=\"selfMsg\">Self Midi: </span>" + data);
+    const msg = describeData(data);
+    if (msg) addMessage("<span class=\"selfMsg\">Self Midi: </span>" + msg);
+}
+
+function describeData(data) {
+    const midiEvent = new MIDIEvent(null, data);
+    const msgA = (midiEvent.a)? " " + midiEvent.a.type + ":" + midiEvent.a.value : "";
+    const msgB = (midiEvent.b)? " " + midiEvent.b.type + ":" + midiEvent.b.value : "";
+    return msgA + msgB;
 }
 
 testMidiButton.addEventListener('click', function () {

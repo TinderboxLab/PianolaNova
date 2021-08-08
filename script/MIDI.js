@@ -1,19 +1,19 @@
 // http://aaron.headwai.com/ra/MIDI/MIDI%20Message%20Table%201.pdf
 // https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
-class MIDIEvent {
-  constructor(face, data) {
-    this.device = {
-      type: face.type,
-      id: face.id,
-      manufacturer: face.manufacturer,
-      name: face.name,
-    };
+export class MIDIEvent {
+  constructor(face = null, data) {
+    // this.device = {
+    //   type: face.type,
+    //   id: face.id,
+    //   manufacturer: face.manufacturer,
+    //   name: face.name,
+    // };
     if (data) {
       const { type, a, b } = MIDIEvent.describedValuesFromData(data);
       this.type = type;
       this.a = a;
       this.b = b;
-    } else {
+    } else if (face){
       this.type = MIDIEvent.toType(
         face.state === "connected" ? "Device Connected" : "Device Disconnected"
       );
