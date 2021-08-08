@@ -307,6 +307,7 @@ export class MIDI {
   }
 
   sendEvent(device, data) {
-    this.onEvent(new MIDIEvent(device, data));
+    this.onEvent(device, data);
+    // this.onEvent(new MIDIEvent(device, data));
   }
 }
