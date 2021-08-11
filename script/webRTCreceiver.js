@@ -56,7 +56,7 @@ function describeData(data) {
     const midiEvent = new MIDIEvent(null, data);
     const msgA = (midiEvent.a)? " " + midiEvent.a.type + ":" + midiEvent.a.value : "";
     const msgB = (midiEvent.b)? " " + midiEvent.b.type + ":" + midiEvent.b.value : "";
-    return msgA + msgB;
+    return " " + midiEvent.type + " - " + msgA + msgB;
 }
 
 testMidiButton.addEventListener('click', function () {

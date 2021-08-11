@@ -55,7 +55,7 @@ function describeData(data) {
     const midiEvent = new MIDIEvent(null, data);
     const msgA = (midiEvent.a)? " " + midiEvent.a.type + ":" + midiEvent.a.value : "";
     const msgB = (midiEvent.b)? " " + midiEvent.b.type + ":" + midiEvent.b.value : "";
-    return msgA + msgB;
+    return " " + midiEvent.type + " - " + msgA + msgB;
 }
 
 testMidiButton.addEventListener('click', function () {
@@ -126,7 +126,7 @@ function join() {
 
     // Create connection to destination peer specified in the input field
     conn = peer.connect(recvId, {
-        reliable: true
+        reliable: false
     });
 
     conn.on('open', function () {
