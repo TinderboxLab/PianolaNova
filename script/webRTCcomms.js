@@ -65,7 +65,9 @@ testMidiButton.addEventListener('click', function () {
     const noteOn = [144, 60, 120];
     const noteOff = [128, 60, 120];
     sendMidiEventToRemote(noteOn);
-    setTimeout(sendMidiEventToRemote(noteOff), 500);  
+    setTimeout(function() {
+        sendMidiEventToRemote(noteOff);
+      }, 500);  
 });
 
 /**
