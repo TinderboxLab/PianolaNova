@@ -1,7 +1,7 @@
 var lastPeerId = null;
 var firstPeerCreated = false;
 var peer = null; // own peer object
-var recvId = window.location.hash;//"c5dwqeqqb2808-e7ea-4a3f-82eb-a8a8bb905eea";
+var recvId = window.location.hash.substring(1);//"c5dwqeqqb2808-e7ea-4a3f-82eb-a8a8bb905eea";
 var conn = null;
 var status = document.getElementById("status");
 var message = document.getElementById("message");
