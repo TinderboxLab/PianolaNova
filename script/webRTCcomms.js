@@ -1,7 +1,7 @@
 var lastPeerId = null;
 var firstPeerCreated = false;
 var peer = null; // own peer object
-var recvId = "c5dwqeqqb2808-e7ea-4a3f-82eb-a8a8bb905eea";
+var recvId = window.location.hash;//"c5dwqeqqb2808-e7ea-4a3f-82eb-a8a8bb905eea";
 var conn = null;
 var status = document.getElementById("status");
 var message = document.getElementById("message");
@@ -9,6 +9,8 @@ var sendMessageBox = document.getElementById("sendMessageBox");
 var sendButton = document.getElementById("sendButton");
 var clearMsgsButton = document.getElementById("clearMsgsButton");
 var testMidiButton = document.getElementById("testMidi");
+
+console.log(window.location.hash);
 
 import { MIDI, MIDIEvent } from "./MIDI.js";
 var midiDevice = null;
