@@ -9,10 +9,13 @@ var sendMessageBox = document.getElementById("sendMessageBox");
 var sendButton = document.getElementById("sendButton");
 var clearMsgsButton = document.getElementById("clearMsgsButton");
 var testMidiButton = document.getElementById("testMidi");
+var recordButton = document.getElementById("record");
+var playButton = document.getElementById("play");
 
 console.log(window.location.hash);
 
 import { MIDI, MIDIEvent } from "./MIDI.js";
+import { MIDISequencer } from "./MIDISequencer.js";
 var midiDevice = null;
 var midi = new MIDI(handleMidiEventFromLocal); 
 /**
@@ -28,6 +31,7 @@ function handleMidiEventFromLocal( device, midiMessage ) {
     if (midiMessage) {
         var data = [].slice.call(midiMessage)
         sendMidiEventToRemote(data);
+        midiSequencer.recordMIDIEvent(data)
     }
 }
 
@@ -69,6 +73,18 @@ testMidiButton.addEventListener('click', function () {
         sendMidiEventToRemote(noteOff);
       }, 500);  
 });
+
+var midiSequencer = new MIDISequencer(sendMidiEventToLocal);
+
+recordButton.addEventListener('click', function () {
+    midiSequencer.record(); 
+});
+
+playButton.addEventListener('click', function () {
+    midiSequencer.stop();
+    midiSequencer.play(); 
+});
+
 
 /**
  * Create the Peer object for our end of the connection.
