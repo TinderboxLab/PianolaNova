@@ -188,6 +188,7 @@ function join() {
     conn.on('close', function () {
         status.innerHTML = "Connection closed";
     });
+    connectVideo();
 };
 
 function ready() {
@@ -203,6 +204,7 @@ function ready() {
         status.innerHTML = "Connection reset<br>Awaiting connection...";
         conn = null;
     });
+    connectVideo();
 }
 
 function addMessage(msg) {
@@ -253,5 +255,46 @@ sendButton.addEventListener('click', function () {
 // Clear messages box
 clearMsgsButton.addEventListener('click', clearMessages);
 
+
+/**
+ * Video call
+ */
+
+var call = null;
+var mediaStream = null;
+var constraints = { audio: true, video: true };
+var videoElement = document.getElementById("video");
+
+function displayCall() {
+    call.on('stream', function(stream) {
+        console.log(stream)
+        videoElement.srcObject = stream;       
+        videoElement.play();
+    });
+}
+ 
+async function connectVideo() {
+    try {
+        mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+        // videoElement.srcObject = mediaStream;
+        // videoElement.play();
+        if (firstPeerCreated) {
+            call = peer.call(recvId, mediaStream);
+            displayCall();
+        }
+        else {
+            peer.on('call', function(remoteCall) {
+                // Answer the call, providing our mediaStream
+                remoteCall.answer(mediaStream);
+                call = remoteCall;
+                displayCall();
+            });
+        }
+        
+    } catch(err) {
+        /* handle the error */
+    }
+}
+ 
 // Since all our callbacks are setup, start the process of obtaining an ID
 initialize();
