@@ -267,7 +267,6 @@ var videoElement = document.getElementById("video");
 
 function displayCall() {
     call.on('stream', function(stream) {
-        console.log(stream)
         videoElement.srcObject = stream;       
         videoElement.play();
     });
@@ -276,8 +275,6 @@ function displayCall() {
 async function connectVideo() {
     try {
         mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-        // videoElement.srcObject = mediaStream;
-        // videoElement.play();
         if (firstPeerCreated) {
             call = peer.call(recvId, mediaStream);
             displayCall();
@@ -289,8 +286,7 @@ async function connectVideo() {
                 call = remoteCall;
                 displayCall();
             });
-        }
-        
+        }       
     } catch(err) {
         /* handle the error */
     }
