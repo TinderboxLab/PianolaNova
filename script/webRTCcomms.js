@@ -45,7 +45,7 @@ function sendMidiEventToLocal(data) {
 function handleMidiEventFromRemote(data) {
     sendMidiEventToLocal(data)
     const msg = describeData(data);
-    if (msg) addMessage("<span class=\"peerMsg\">Peer Midi: </span>" + msg);
+    if (msg) addMessage("Peer: " + msg, "peerMsg");
 }
 
 function sendMidiEventToRemote(data) {
@@ -55,14 +55,14 @@ function sendMidiEventToRemote(data) {
         console.log('Connection is closed');
     }
     const msg = describeData(data);
-    if (msg) addMessage("<span class=\"selfMsg\">Self Midi: </span>" + msg);
+    if (msg) addMessage("Self: " + msg, "selfMsg");
 }
 
 function describeData(data) {
     const midiEvent = new MIDIEvent(null, data);
     const msgA = (midiEvent.a)? " " + midiEvent.a.type + ":" + midiEvent.a.value : "";
     const msgB = (midiEvent.b)? " " + midiEvent.b.type + ":" + midiEvent.b.value : "";
-    return " " + midiEvent.type + " - " + msgA + msgB;
+    return " " + midiEvent.type + " " + msgA + msgB;
 }
 
 testMidiButton.addEventListener('click', function () {
@@ -179,7 +179,7 @@ function join() {
     // Handle incoming data (messages only since this is the signal sender)
     conn.on('data', function (data) {
         if (typeof(data)=== "string") {
-            addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+            addMessage("Peer: " + msg, "peerMsg");
         } 
         else if (typeof(data)=== "object") {
             handleMidiEventFromRemote(data);
@@ -194,7 +194,7 @@ function join() {
 function ready() {
     conn.on('data', function (data) {
         if (typeof(data)=== "string") {
-            addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+            addMessage("Peer: " + msg, "peerMsg");
         } 
         else if (typeof(data)=== "object") {
             handleMidiEventFromRemote(data);
@@ -207,7 +207,7 @@ function ready() {
     connectVideo();
 }
 
-function addMessage(msg) {
+function addMessage(msg, className) {
     var now = new Date();
     var h = now.getHours();
     var m = addZero(now.getMinutes());
@@ -224,7 +224,7 @@ function addMessage(msg) {
         return t;
     };
 
-    message.innerHTML = "<br><span class=\"msg-time\">" + h + ":" + m + ":" + s + "</span>  -  " + msg + message.innerHTML;
+    message.innerHTML = "<div class=\""+className+"\">" + h + ":" + m + ":" + s + "  -  " + msg + "</div>" + message.innerHTML;
 };
 
 function clearMessages() {
@@ -246,7 +246,7 @@ sendButton.addEventListener('click', function () {
         sendMessageBox.value = "";
         conn.send(msg);
         console.log("Sent: " + msg);
-        addMessage("<span class=\"selfMsg\">Self: </span> " + msg);
+        addMessage("Self: " + msg, "selfMsg");
     } else {
         console.log('Connection is closed');
     }
