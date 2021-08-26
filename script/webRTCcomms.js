@@ -1,7 +1,9 @@
 var lastPeerId = null;
 var firstPeerCreated = false;
 var peer = null; // own peer object
-var recvId = window.location.hash.substring(1);//"c5dwqeqqb2808-e7ea-4a3f-82eb-a8a8bb905eea";
+var recvId = idFromHash();//"c5dwqeqqb2808-e7ea-4a3f-82eb-a8a8bb905eea";
+var locationName = locationNameFromHash();
+var remoteLocationName = getRemoteLocationName();
 var conn = null;
 var status = document.getElementById("status");
 var message = document.getElementById("message");
@@ -13,6 +15,21 @@ var recordButton = document.getElementById("record");
 var playButton = document.getElementById("play");
 
 console.log(window.location.hash);
+
+function idFromHash() {
+    return window.location.hash.substring(1).split("@")[0];
+}
+function locationNameFromHash() {
+    const hashSplit = window.location.hash.split("@");
+    const location = (hashSplit.length > 1)? hashSplit[1] : "Here";
+    return location;
+}
+
+function getRemoteLocationName() {
+    if (locationName === "Leeds") return "Edinburgh";
+    if (locationName === "Edinburgh") return "Leeds";
+    return "There";
+}
 
 import { MIDI, MIDIEvent } from "./MIDI.js";
 import { MIDISequencer } from "./MIDISequencer.js";
@@ -45,7 +62,7 @@ function sendMidiEventToLocal(data) {
 function handleMidiEventFromRemote(data) {
     sendMidiEventToLocal(data)
     const msg = describeData(data);
-    if (msg) addMessage("There: " + msg, "peerMsg");
+    if (msg) addMessage(remoteLocationName + ": " + msg, "peerMsg");
 }
 
 function sendMidiEventToRemote(data) {
@@ -55,7 +72,7 @@ function sendMidiEventToRemote(data) {
         console.log('Connection is closed');
     }
     const msg = describeData(data);
-    if (msg) addMessage("Here: " + msg, "selfMsg");
+    if (msg) addMessage(locationName + ": " + msg, "selfMsg");
 }
 
 function describeData(data) {
@@ -180,7 +197,7 @@ function join() {
     // Handle incoming data (messages only since this is the signal sender)
     conn.on('data', function (data) {
         if (typeof(data)=== "string") {
-            addMessage("There: " + msg, "peerMsg");
+            addMessage(remoteLocationName + ": " + msg, "peerMsg");
         } 
         else if (typeof(data)=== "object") {
             handleMidiEventFromRemote(data);
@@ -195,7 +212,7 @@ function join() {
 function ready() {
     conn.on('data', function (data) {
         if (typeof(data)=== "string") {
-            addMessage("There: " + msg, "peerMsg");
+            addMessage(remoteLocationName + ": " + msg, "peerMsg");
         } 
         else if (typeof(data)=== "object") {
             handleMidiEventFromRemote(data);
@@ -247,7 +264,7 @@ sendButton.addEventListener('click', function () {
         sendMessageBox.value = "";
         conn.send(msg);
         console.log("Sent: " + msg);
-        addMessage("Here: " + msg, "selfMsg");
+        addMessage(locationName + ": " + msg, "selfMsg");
     } else {
         console.log('Connection is closed');
     }
