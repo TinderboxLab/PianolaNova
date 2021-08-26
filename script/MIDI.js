@@ -332,7 +332,7 @@ export class MIDI {
       "A#",
       "B"
     ]
-    const octave = noteNum/12 - 2
+    const octave = Math.floor(noteNum/12 - 2)
     const noteStep = noteNum % 12
     return noteNames[noteStep] + octave;
 
