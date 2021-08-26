@@ -45,7 +45,7 @@ function sendMidiEventToLocal(data) {
 function handleMidiEventFromRemote(data) {
     sendMidiEventToLocal(data)
     const msg = describeData(data);
-    if (msg) addMessage("Peer: " + msg, "peerMsg");
+    if (msg) addMessage("There: " + msg, "peerMsg");
 }
 
 function sendMidiEventToRemote(data) {
@@ -55,14 +55,15 @@ function sendMidiEventToRemote(data) {
         console.log('Connection is closed');
     }
     const msg = describeData(data);
-    if (msg) addMessage("Self: " + msg, "selfMsg");
+    if (msg) addMessage("Here: " + msg, "selfMsg");
 }
 
 function describeData(data) {
-    const midiEvent = new MIDIEvent(null, data);
-    const msgA = (midiEvent.a)? " " + midiEvent.a.type + ":" + midiEvent.a.value : "";
-    const msgB = (midiEvent.b)? " " + midiEvent.b.type + ":" + midiEvent.b.value : "";
-    return " " + midiEvent.type + " " + msgA + msgB;
+    const [func, byte1] = data;
+    if (func >= 144 && func <= 159) {
+        const msgA = midi.noteNumberToName(byte1);
+        return " " + msgA;
+    }
 }
 
 testMidiButton.addEventListener('click', function () {
@@ -179,7 +180,7 @@ function join() {
     // Handle incoming data (messages only since this is the signal sender)
     conn.on('data', function (data) {
         if (typeof(data)=== "string") {
-            addMessage("Peer: " + msg, "peerMsg");
+            addMessage("There: " + msg, "peerMsg");
         } 
         else if (typeof(data)=== "object") {
             handleMidiEventFromRemote(data);
@@ -194,7 +195,7 @@ function join() {
 function ready() {
     conn.on('data', function (data) {
         if (typeof(data)=== "string") {
-            addMessage("Peer: " + msg, "peerMsg");
+            addMessage("There: " + msg, "peerMsg");
         } 
         else if (typeof(data)=== "object") {
             handleMidiEventFromRemote(data);
@@ -246,7 +247,7 @@ sendButton.addEventListener('click', function () {
         sendMessageBox.value = "";
         conn.send(msg);
         console.log("Sent: " + msg);
-        addMessage("Self: " + msg, "selfMsg");
+        addMessage("Here: " + msg, "selfMsg");
     } else {
         console.log('Connection is closed');
     }

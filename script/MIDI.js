@@ -316,4 +316,25 @@ export class MIDI {
     this.onEvent(device, data);
     // this.onEvent(new MIDIEvent(device, data));
   }
+
+  noteNumberToName(noteNum) {
+    const noteNames = [
+      "C",
+      "C#",
+      "D",
+      "D#",
+      "E",
+      "F",
+      "F#",
+      "G",
+      "G#",
+      "A",
+      "A#",
+      "B"
+    ]
+    const octave = noteNum/12 - 2
+    const noteStep = noteNum % 12
+    return noteNames[noteStep] + octave;
+
+  }
 }
