@@ -259,6 +259,8 @@ export class MIDI {
           for (const input of inputs) this.initializeInput(input);
           for (const output of outputs) this.initializeOutput(output);
 
+
+
           access.addEventListener("statechange", ({ port }) => {
             if (port.type === "input") {
               if (port.state === "connected") this.initializeInput(port);
@@ -282,6 +284,8 @@ export class MIDI {
 
   initializeInput(input) {
     if (this.inputs[input.id]) return;
+    // dont use the RPI default through port
+    if (input.name === "Midi Through Port-0") return;
     this.sendEvent(input);
     this.inputs[input.id] = input;
     input.addEventListener("midimessage", ({ data }) =>
@@ -290,8 +294,10 @@ export class MIDI {
   }
 
   initializeOutput(output) {
+    // dont use the RPI default through port
+    if (output.name === "Midi Through Port-0") return;
     this.sendEvent(output);
-    this.outputs[output.id] = output;
+    this.outputs[output.id] = output;  
   }
 
   teardownInput(input) {
