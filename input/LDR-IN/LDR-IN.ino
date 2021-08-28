@@ -1,16 +1,22 @@
 #include "MIDIUSB.h"
 
+const int numReadings = 50;
+const int numPins = 3;
+
+int readings[numReadings][numPins];       // the readings from the analog input
+int readIndex[numPins] = {};              // the index of the current reading
+int total[numPins] = {};                  // the running total
+int average[numPins] = {};                // the average
+
 //LDR pins and values
-int lastValue[8] = {};
-int newValue[8] = {};
-int midiNote[8] = {};
-int threshold = 159; //change depending on amount of light
+int currentValue[numPins] = {};
+int midiNote[numPins] = {};
+int threshold = 500; //change depending on amount of light
 
 //LDR states
-bool ldrState[8] = {};
+bool ldrState[numPins] = {false};
 
 //MUX pins and values
-const int E = 2;
 const int controlPin[4] = {4, 5, 6, 7};
 int SIG = A2; // PWM? For LDRs needs to be analog input
 
@@ -51,49 +57,54 @@ void setup() {
   }
 
   Serial.begin(115200); // MIDI Rate
-
 }
 
 void loop() {
-  for (byte pin = 0; pin <= 7; pin++) // 15 for mux pins
+  for (byte pin = 0; pin <= numPins-1; pin++) // 15 for mux pins
   {
     selectMuxPin(pin); // select one at a time
-    newValue[pin] = analogRead(SIG);
-    if (lastValue[pin] == 0) {
-      lastValue[pin] = newValue[pin];
+    currentValue[pin] = analogRead(SIG);
+//    Serial.println(currentValue[0]);
+
+    // subtract the last reading:
+    total[pin] = total[pin] - readings[readIndex[pin]][pin];
+    // read from the sensor:
+    readings[readIndex[pin]][pin] = currentValue[pin];
+    // add the reading to the total:
+    total[pin] = total[pin] + readings[readIndex[pin]][pin];
+    // advance to the next position in the array:
+    readIndex[pin] = readIndex[pin] + 1;
+
+    // if we're at the end of the array...
+    if (readIndex[pin] >= numReadings) {
+      // ...wrap around to the beginning:
+      readIndex[pin] = 0;
+    }
+    
+    // calculate the average:
+    average[pin] = total[pin] / numReadings;
+    
+    if (average[pin] < threshold && ldrState[pin] == false) {
+
+      // Do MIDI
+      Serial.println("Sending note on");
+      Serial.println(pin);
+      midiNote[pin] = pin + 36;
+      noteOn(0, midiNote[pin], 64);   // Channel 0, middle C, normal velocity
+      MidiUSB.flush();
+      delay(100);
+      ldrState[pin] = true;
     }
 
-    if (lastValue[pin] - newValue[pin] > threshold) { //light drops
-      if (ldrState[pin] == false) {
+    else if (average[pin] > threshold && ldrState[pin] == true) {
 
-        Serial.print(pin);
-
-//      Do MIDI
-        Serial.println("Sending note on");
-        midiNote[pin] = pin + 36;
-        noteOn(0, midiNote[pin], 64);   // Channel 0, middle C, normal velocity
-        MidiUSB.flush();
-
-        lastValue[pin] = newValue[pin];
-        ldrState[pin] = true;
-      }
-     }
-
-    else if (newValue[pin] - lastValue[pin] >= threshold) {
-      if (ldrState[pin] == true) {
-
-        Serial.print(pin);
-
-//      Do MIDI
-        Serial.println("Sending note off");
-        noteOff(0, midiNote[pin], 64);  // Channel 0, middle C, normal velocity
-        MidiUSB.flush();
-        delay(100);
-
-        lastValue[pin] = newValue[pin];
-        ldrState[pin] = false;
-
-      }
+      // Do MIDI
+      Serial.println("Sending note off");
+      midiNote[pin] = pin + 36;
+      noteOff(0, midiNote[pin], 64);  // Channel 0, middle C, normal velocity
+      MidiUSB.flush();
+      delay(100);
+      ldrState[pin] = false;
     }
   }
 }
