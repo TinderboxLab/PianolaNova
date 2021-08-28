@@ -2,6 +2,7 @@
 
 const int num_pins = 16; // mux inputs
 const int num_pins2 = 8; // direct arduino inputs
+const byte totalPins = num_pins + num_pins2;
 
 //LDR pins and values
 int lastValue[num_pins] = {};
@@ -17,7 +18,6 @@ const int controlPin[4] = {4, 5, 6, 7};
 int SIG = 8; // PWM? For LDRs needs to be analog input
 
 //direct inputs
-const int keyDirect[num_pins2] = {16, 17, 18, 19, 20, 21, 22, 23};
 
 void selectMuxPin(byte pin)
 {
@@ -54,10 +54,10 @@ void setup() {
     pinMode(controlPin[i], OUTPUT);
     digitalWrite(controlPin[i], HIGH);
   }
-
-  for (int j = 0; j < num_pins2; j++)
+  
+  for (int j = num_pins; j < totalPins; j++)
   {
-    pinMode(keyDirect[j], INPUT_PULLUP);
+    pinMode(j, INPUT_PULLUP);
   }
 
   Serial.begin(115200); // MIDI Rate
@@ -66,12 +66,12 @@ void setup() {
 
 void processPinState(byte pin) {
    // compare the buttonState to its previous state
-    Serial.println("processing button state");
     if (buttonState[pin] != lastButtonState[pin]) {
       // if the state has changed
       if (buttonState[pin] == HIGH) {
         // if the current state is HIGH then the key went from off to on:
-        Serial.println("Sending note on");
+        Serial.print(pin);
+        Serial.println(" Sending note on");
         midiNote[pin] = pin + 36;
         noteOn(0, midiNote[pin], 64);   // Channel 0, middle C, normal velocity
         MidiUSB.flush();
@@ -79,7 +79,8 @@ void processPinState(byte pin) {
       }
       else {
         // if the current state is LOW then the key went from on to off:
-        Serial.println("Sending note off");
+        Serial.print(pin);
+        Serial.println(" Sending note off");
         noteOff(0, midiNote[pin], 64);  // Channel 0, middle C, normal velocity
         MidiUSB.flush();
         //delay(100);
@@ -95,16 +96,13 @@ void loop() {
   
   for (byte pin = 0; pin < num_pins; pin++) // mux pins
   {
-    Serial.print(pin);
     selectMuxPin(pin); // select one at a time
     buttonState[pin] = digitalRead(SIG);
     processPinState(pin);
   }
-  byte totalPins = num_pins + num_pins2;
   for (byte pin2 = num_pins; pin2 < totalPins; pin2++) // direct
   {
-    Serial.print(pin2);
-    buttonState[pin2] = digitalRead(keyDirect[pin2]);
+    buttonState[pin2] = digitalRead(pin2);
     processPinState(pin2);
   }
 }
