@@ -1,0 +1,35 @@
+body {
+    background: black;
+    color: white;
+}
+
+#message {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#video {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 70%;
+    object-fit: cover;
+}
+#console {
+    position: absolute;
+    top: 1%;
+    left: 1%;
+    bottom: 1%;
+    width: 28%;
+    overflow: hidden;   
+}
+
+.selfMsg {
+    padding-bottom: 0.5em;
+    color: rgb(245, 244, 243);
+}
+
+.peerMsg {
+    padding-bottom: 0.5em;
+    color: rgb(88, 212, 30);
+}
