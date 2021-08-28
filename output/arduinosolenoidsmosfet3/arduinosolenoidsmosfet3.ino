@@ -1,11 +1,7 @@
 #include "MIDIUSB.h"
-// this loads the SimpleTimer library, which must be first installed in the Arduino IDE
-// #include <SimpleTimer.h>
 
 // robojax code
 int led = 13; // arduino test led
-const int E = 2; // enable mux
-// const int SIG = 26; // LOW level signal to mux for relay
 const int controlPin[4] = {3, 4, 5, 6};
 // const int solenoidPin = 7;
 
@@ -14,31 +10,9 @@ int loopDelay = 100; // delay in loop
 const int middleC = 60;
 
 const int midiOffset = -36; // When set to -60, an incoming middle-C MIDI note will trigger the solenoid on channel 1
-int soleTrig[] = {0,1}; // for LDR to solenoid trigger, removing serial data
-
 
 const byte NOTEON =  0x09;
 const byte NOTEOFF = 0x08;
-
-const int muxTable[16][4] = {
-  // s0, s1, s2, s3
-  {0, 0, 0, 0}, // 0
-  {1, 0, 0, 0}, // 1
-  {0, 1, 0, 0}, // 2
-  {1, 1, 0, 0}, // 3
-  {0, 0, 1, 0}, // 4
-  {1, 0, 1, 0}, // 5
-  {0, 1, 1, 0}, // 6
-  {1, 1, 1, 0}, // 7
-  {0, 0, 0, 1}, // 8
-  {1, 0, 0, 1}, // 9
-  {0, 1, 0, 1}, // 10
-  {1, 1, 0, 1}, // 11
-  {0, 0, 1, 1}, // 12
-  {1, 0, 1, 1}, // 13
-  {0, 1, 1, 1}, // 14
-  {1, 1, 1, 1}, // 15
-};
 
 int lastMillis = 0;
 int newMillis = 0;
@@ -50,8 +24,8 @@ int channelOffset = 0;
 
 const int NUMCHANNELS = 24;
 
-const int solenoidPin[NUMCHANNELS] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25};
-
+const int solenoidPin[NUMCHANNELS] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 26, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25};
+// OUTPUT 13 RESERVED FOR LED
 
 int noteOffSchedule[NUMCHANNELS];
 int noteOnSchedule[NUMCHANNELS];
@@ -59,7 +33,6 @@ int noteOnSchedule[NUMCHANNELS];
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(LED_BUILTIN, OUTPUT);
-
   lastMillis = millis();
 
   for(int i=0; i< NUMCHANNELS; i++) {
@@ -75,13 +48,8 @@ void setup() {
   for (int i = 0; i < NUMCHANNELS; i++) {
     digitalWrite(solenoidPin[i], LOW);
     pinMode(solenoidPin[i], OUTPUT);
-  }
-
-
-  
-  
-  pinMode(led, OUTPUT); // test LED  
-
+  } 
+  // pinMode(led, OUTPUT); // test LED  
   Serial.begin(115200); // baud rate of serial monitor
 
 }
@@ -128,17 +96,7 @@ void monitorTimers() {
   newMillis = int(millis()); // cast to (signed) int for calculations below that could have negative values
   int diff = newMillis - lastMillis;  
   for(int i=0; i< NUMCHANNELS; i++) {
-    /* if(noteOnSchedule[i]<0) {
-      // note on
-      Serial.println("TURNING ON CHANNEL "+String(i));
-      digitalWrite(solenoidPin[i], HIGH);
-      noteOffSchedule[i] = loopDelay; // schedule note off
-      noteOnSchedule[i] = 100000; // reset note on
-      digitalWrite(LED_BUILTIN, HIGH);
-    } else if (noteOnSchedule[i] < 100000) {
-      // decrement
-      noteOnSchedule[i] -= diff;
-    } */
+    
     if(noteOffSchedule[i]<=0) {
       // this channel needs to be turned off
       // reset this channel
