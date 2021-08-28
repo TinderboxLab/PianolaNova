@@ -1,7 +1,7 @@
 #include "MIDIUSB.h"
 
-const int num_pins = 16; // mux inputs
-const int num_pins2 = 8; // direct arduino inputs
+const byte num_pins = 16; // mux inputs
+const byte num_pins2 = 8; // direct arduino inputs
 const byte totalPins = num_pins + num_pins2;
 
 //LDR pins and values
@@ -15,13 +15,13 @@ int lastButtonState[num_pins] = {0};     // previous state of the button
 
 //MUX pins and values
 const int controlPin[4] = {4, 5, 6, 7};
-int SIG = 8; // PWM? For LDRs needs to be analog input
+byte SIG = 8; // PWM? For LDRs needs to be analog input
 
 //direct inputs
 
 void selectMuxPin(byte pin)
 {
-  for (int i = 0; i < 4; i++)
+  for (byte i = 0; i < 4; i++)
   {
     if (pin & (1 << i))
       digitalWrite(controlPin[i], HIGH);
@@ -66,30 +66,29 @@ void setup() {
 
 void processPinState(byte pin) {
    // compare the buttonState to its previous state
-    if (buttonState[pin] != lastButtonState[pin]) {
-      // if the state has changed
-      if (buttonState[pin] == HIGH) {
-        // if the current state is HIGH then the key went from off to on:
-        Serial.print(pin);
-        Serial.println(" Sending note on");
-        midiNote[pin] = pin + 36;
-        noteOn(0, midiNote[pin], 64);   // Channel 0, middle C, normal velocity
-        MidiUSB.flush();
-
-      }
-      else {
-        // if the current state is LOW then the key went from on to off:
-        Serial.print(pin);
-        Serial.println(" Sending note off");
-        noteOff(0, midiNote[pin], 64);  // Channel 0, middle C, normal velocity
-        MidiUSB.flush();
-        //delay(100);
-      }
-      // Delay a little bit to avoid bouncing
-      delay(50);
+  if (buttonState[pin] != lastButtonState[pin]) {
+    // if the state has changed
+    if (buttonState[pin] == HIGH) {
+      // if the current state is HIGH then the key went from off to on:
+      Serial.print(pin);
+      Serial.println(" Sending note on");
+      midiNote[pin] = pin + 36;
+      noteOn(0, midiNote[pin], 64);   // Channel 0, middle C, normal velocity
+      MidiUSB.flush();
+    }
+    else {
+      // if the current state is LOW then the key went from on to off:
+      Serial.print(pin);
+      Serial.println(" Sending note off");
+      noteOff(0, midiNote[pin], 64);  // Channel 0, middle C, normal velocity
+      MidiUSB.flush();
+      //delay(100);
     }
     // save the current state as the last state, for next time through the loop
-    lastButtonState[pin] = buttonState[pin]; 
+    lastButtonState[pin] = buttonState[pin];
+    // Delay a little bit to avoid bouncing
+    delay(50);
+  }
 }
 
 void loop() {
