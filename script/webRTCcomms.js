@@ -7,8 +7,6 @@ var remoteLocationName = getRemoteLocationName();
 var conn = null;
 var status = document.getElementById("status");
 var message = document.getElementById("message");
-var sendMessageBox = document.getElementById("sendMessageBox");
-var sendButton = document.getElementById("sendButton");
 var clearMsgsButton = document.getElementById("clearMsgsButton");
 var testMidiButton = document.getElementById("testMidi");
 var recordButton = document.getElementById("record");
@@ -83,14 +81,14 @@ function describeData(data) {
     }
 }
 
-testMidiButton.addEventListener('click', function () {
+function testMidi() {
     const noteOn = [144, 60, 120];
     const noteOff = [128, 60, 120];
     sendMidiEventToRemote(noteOn);
-    setTimeout(function() {
-        sendMidiEventToRemote(noteOff);
-      }, 500);  
-});
+    setTimeout(sendMidiEventToRemote, 500, noteOff); 
+}
+
+testMidiButton.addEventListener('click', testMidi);
 
 var midiSequencer = new MIDISequencer(sendMidiEventToLocal);
 
@@ -103,6 +101,12 @@ playButton.addEventListener('click', function () {
     midiSequencer.play(); 
 });
 
+document.addEventListener('keypress', function(e) {
+    var event = e || window.event;
+    var char = event.which || event.keyCode;
+    if (char == 109)
+        testMidi();
+});
 
 /**
  * Create the Peer object for our end of the connection.
@@ -111,6 +115,7 @@ playButton.addEventListener('click', function () {
  * peer object.
  */
 function initialize() {
+    status.innerHTML = "Awaiting connection.."
     // Create own peer object with connection to shared PeerJS server
     let peerId = (firstPeerCreated)? null: recvId;
     peer = new Peer(peerId, {
@@ -128,11 +133,6 @@ function initialize() {
         if (firstPeerCreated) join();
     });
     peer.on('connection', function (c) {
-        // Disallow incoming connections
-        // c.on('open', function() {
-        //     c.send("Sender does not accept incoming connections");
-        //     setTimeout(function() { c.close(); }, 500);
-        // });
         // Allow only a single connection
         if (conn && conn.open) {
             c.on('open', function() {
@@ -143,16 +143,12 @@ function initialize() {
         }
 
         conn = c;
-        status.innerHTML = "Connected";
+        status.innerHTML = ""; //"Connected";
         if (!firstPeerCreated) ready();
     });
     peer.on('disconnected', function () {
         status.innerHTML = "Connection lost. Please reconnect";
         console.log('Connection lost. Please reconnect');
-
-        // Workaround for peer.reconnect deleting previous id
-        //peer.id = lastPeerId;
-        //peer._lastServerId = lastPeerId;
         peer.reconnect();
     });
     peer.on('close', function() {
@@ -187,12 +183,7 @@ function join() {
     });
 
     conn.on('open', function () {
-        status.innerHTML = "Connected";
-        
-        // // Check URL params for comamnds that should be sent immediately
-        // var command = getUrlParam("command");
-        // if (command)
-        //     conn.send(command);
+        status.innerHTML = "" //"Connected";
     });
     // Handle incoming data (messages only since this is the signal sender)
     conn.on('data', function (data) {
@@ -250,26 +241,6 @@ function clearMessages() {
     addMessage("Msgs cleared");
 };
 
-// Listen for enter in message box
-sendMessageBox.addEventListener('keypress', function (e) {
-    var event = e || window.event;
-    var char = event.which || event.keyCode;
-    if (char == '13')
-        sendButton.click();
-});
-// Send message
-sendButton.addEventListener('click', function () {
-    if (conn && conn.open) {
-        var msg = sendMessageBox.value;
-        sendMessageBox.value = "";
-        conn.send(msg);
-        console.log("Sent: " + msg);
-        addMessage(locationName + ": " + msg, "selfMsg");
-    } else {
-        console.log('Connection is closed');
-    }
-});
-
 // Clear messages box
 clearMsgsButton.addEventListener('click', clearMessages);
 
@@ -280,7 +251,7 @@ clearMsgsButton.addEventListener('click', clearMessages);
 
 var call = null;
 var mediaStream = null;
-var constraints = { audio: true, video: true };
+var constraints = { audio: true, video: { width: {exact: 720}, height: {exact: 720} } };
 var videoElement = document.getElementById("video");
 
 function displayCall() {
