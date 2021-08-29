@@ -115,6 +115,7 @@ document.addEventListener('keypress', function(e) {
  * peer object.
  */
 function initialize() {
+    status.innerHTML = "Awaiting connection.."
     // Create own peer object with connection to shared PeerJS server
     let peerId = (firstPeerCreated)? null: recvId;
     peer = new Peer(peerId, {
@@ -132,11 +133,6 @@ function initialize() {
         if (firstPeerCreated) join();
     });
     peer.on('connection', function (c) {
-        // Disallow incoming connections
-        // c.on('open', function() {
-        //     c.send("Sender does not accept incoming connections");
-        //     setTimeout(function() { c.close(); }, 500);
-        // });
         // Allow only a single connection
         if (conn && conn.open) {
             c.on('open', function() {
@@ -147,16 +143,12 @@ function initialize() {
         }
 
         conn = c;
-        status.innerHTML = "Connected";
+        status.innerHTML = ""; //"Connected";
         if (!firstPeerCreated) ready();
     });
     peer.on('disconnected', function () {
         status.innerHTML = "Connection lost. Please reconnect";
         console.log('Connection lost. Please reconnect');
-
-        // Workaround for peer.reconnect deleting previous id
-        //peer.id = lastPeerId;
-        //peer._lastServerId = lastPeerId;
         peer.reconnect();
     });
     peer.on('close', function() {
@@ -191,12 +183,7 @@ function join() {
     });
 
     conn.on('open', function () {
-        status.innerHTML = "Connected";
-        
-        // // Check URL params for comamnds that should be sent immediately
-        // var command = getUrlParam("command");
-        // if (command)
-        //     conn.send(command);
+        status.innerHTML = "" //"Connected";
     });
     // Handle incoming data (messages only since this is the signal sender)
     conn.on('data', function (data) {
