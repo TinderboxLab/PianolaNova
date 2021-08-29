@@ -7,8 +7,6 @@ var remoteLocationName = getRemoteLocationName();
 var conn = null;
 var status = document.getElementById("status");
 var message = document.getElementById("message");
-var sendMessageBox = document.getElementById("sendMessageBox");
-var sendButton = document.getElementById("sendButton");
 var clearMsgsButton = document.getElementById("clearMsgsButton");
 var testMidiButton = document.getElementById("testMidi");
 var recordButton = document.getElementById("record");
@@ -83,14 +81,14 @@ function describeData(data) {
     }
 }
 
-testMidiButton.addEventListener('click', function () {
+function testMidi() {
     const noteOn = [144, 60, 120];
     const noteOff = [128, 60, 120];
     sendMidiEventToRemote(noteOn);
-    setTimeout(function() {
-        sendMidiEventToRemote(noteOff);
-      }, 500);  
-});
+    setTimeout(sendMidiEventToRemote, 500, noteOff); 
+}
+
+testMidiButton.addEventListener('click', testMidi);
 
 var midiSequencer = new MIDISequencer(sendMidiEventToLocal);
 
@@ -103,6 +101,12 @@ playButton.addEventListener('click', function () {
     midiSequencer.play(); 
 });
 
+document.addEventListener('keypress', function(e) {
+    var event = e || window.event;
+    var char = event.which || event.keyCode;
+    if (char == 109)
+        testMidi();
+});
 
 /**
  * Create the Peer object for our end of the connection.
@@ -249,26 +253,6 @@ function clearMessages() {
     message.innerHTML = "";
     addMessage("Msgs cleared");
 };
-
-// Listen for enter in message box
-sendMessageBox.addEventListener('keypress', function (e) {
-    var event = e || window.event;
-    var char = event.which || event.keyCode;
-    if (char == '13')
-        sendButton.click();
-});
-// Send message
-sendButton.addEventListener('click', function () {
-    if (conn && conn.open) {
-        var msg = sendMessageBox.value;
-        sendMessageBox.value = "";
-        conn.send(msg);
-        console.log("Sent: " + msg);
-        addMessage(locationName + ": " + msg, "selfMsg");
-    } else {
-        console.log('Connection is closed');
-    }
-});
 
 // Clear messages box
 clearMsgsButton.addEventListener('click', clearMessages);
