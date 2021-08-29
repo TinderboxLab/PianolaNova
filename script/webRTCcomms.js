@@ -280,7 +280,7 @@ clearMsgsButton.addEventListener('click', clearMessages);
 
 var call = null;
 var mediaStream = null;
-var constraints = { audio: true, video: true };
+var constraints = { audio: true, video: { width: {exact: 720}, height: {exact: 720} } };
 var videoElement = document.getElementById("video");
 
 function displayCall() {
