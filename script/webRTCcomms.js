@@ -253,6 +253,8 @@ var call = null;
 var mediaStream = null;
 var constraints = { audio: true, video: { width: {exact: 720}, height: {exact: 720} } };
 var videoElement = document.getElementById("video");
+var connectionTimer = null;
+var connectionAttempts = 0;
 
 function displayCall() {
     call.on('stream', function(stream) {
@@ -260,8 +262,20 @@ function displayCall() {
         videoElement.play();
     });
 }
+
+function connectVideo() {
+    connectionTimer = setInterval(() => {
+        if (!mediaStream && connectionAttempts < 20) {
+            tryToConnectVideo();
+        }
+        else {
+            clearInterval(connectionTimer);
+        }
+        connectionAttempts++;
+    }, 10*1000);
+}
  
-async function connectVideo() {
+async function tryToConnectVideo() {
     try {
         mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
         if (firstPeerCreated) {
