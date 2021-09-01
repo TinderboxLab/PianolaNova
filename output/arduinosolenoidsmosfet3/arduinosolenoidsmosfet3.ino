@@ -7,10 +7,9 @@ const int controlPin[4] = {3, 4, 5, 6};
 
 int loopDelay = 100; // delay in loop
 
-const int middleC = 60;
-
-const int midiOffset = -36; // When set to -60, an incoming middle-C MIDI note will trigger the solenoid on channel 1
-
+const int midiOffset = -36; // i.e. MIDI note 36 in triggers channel 0, 37 triggers channel 1, etc.
+// SET TO -32 FOR TESTING: WILL ECHO A THIRD UP. CHANGE TO -36 WHEN LIVE!
+  
 const byte NOTEON =  0x09;
 const byte NOTEOFF = 0x08;
 
@@ -95,22 +94,26 @@ void HandleNoteOff(byte channel, byte note, byte velocity) {
 void monitorTimers() {
   newMillis = int(millis()); // cast to (signed) int for calculations below that could have negative values
   int diff = newMillis - lastMillis;  
-  for(int i=0; i< NUMCHANNELS; i++) {
-    
-    if(noteOffSchedule[i]<=0) {
-      // this channel needs to be turned off
-      // reset this channel
-      Serial.println("TURNING OFF CHANNEL "+String(solenoidPin[i]));
-                   
-      digitalWrite(solenoidPin[i], LOW);
-      digitalWrite(LED_BUILTIN, LOW);
-      noteOffSchedule[i] = 100000; // reset note off
-    } else if (noteOffSchedule[i] < 100000) {
-      // decrement
-      noteOffSchedule[i] -= diff;
+  if(diff>=5) {
+    for(int i=0; i< NUMCHANNELS; i++) {
+      
+      if(noteOffSchedule[i]<=0) {
+        // this channel needs to be turned off
+        // reset this channel
+        Serial.println("TURNING OFF CHANNEL "+String(solenoidPin[i]));
+                     
+        digitalWrite(solenoidPin[i], LOW);
+        digitalWrite(LED_BUILTIN, LOW);
+        noteOffSchedule[i] = 100000; // reset note off
+      } else if (noteOffSchedule[i] < 100000) {
+        // decrement
+        noteOffSchedule[i] -= diff;
+      }
     }
+    
+    lastMillis = newMillis;
   }
-  lastMillis = newMillis;
+  
 }
 
 void loop() {
