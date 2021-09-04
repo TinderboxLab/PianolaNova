@@ -125,6 +125,7 @@ function initialize() {
 
     peer.on('open', function (id) {
         // Workaround for peer.reconnect deleting previous id
+        
         if (peer.id === null) {
             console.log('Received null id from peer open');
             peer.id = lastPeerId;
@@ -135,6 +136,7 @@ function initialize() {
     });
     peer.on('connection', function (c) {
         // Allow only a single connection
+        console.log(conn)
         if (conn && conn.open) {
             c.on('open', function() {
                 c.send("Already connected to another client");
