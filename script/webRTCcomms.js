@@ -136,7 +136,6 @@ function initialize() {
     });
     peer.on('connection', function (c) {
         // Allow only a single connection
-        console.log(conn)
         if (conn && conn.open) {
             c.on('open', function() {
                 c.send("Already connected to another client");
@@ -267,15 +266,15 @@ function displayCall() {
 }
 
 function connectVideo() {
-    // connectionTimer = setInterval(() => {
-    //     if (!mediaStream && connectionAttempts < 20) {
-    //         tryToConnectVideo();
-    //     }
-    //     else {
-    //         clearInterval(connectionTimer);
-    //     }
-    //     connectionAttempts++;
-    // }, 10*1000);
+    connectionTimer = setInterval(() => {
+        if (!mediaStream && connectionAttempts < 20) {
+            tryToConnectVideo();
+        }
+        else {
+            clearInterval(connectionTimer);
+        }
+        connectionAttempts++;
+    }, 10*1000);
 }
  
 async function tryToConnectVideo() {
