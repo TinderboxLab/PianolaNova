@@ -264,15 +264,15 @@ function displayCall() {
 }
 
 function connectVideo() {
-    connectionTimer = setInterval(() => {
-        if (!mediaStream && connectionAttempts < 20) {
-            tryToConnectVideo();
-        }
-        else {
-            clearInterval(connectionTimer);
-        }
-        connectionAttempts++;
-    }, 10*1000);
+    // connectionTimer = setInterval(() => {
+    //     if (!mediaStream && connectionAttempts < 20) {
+    //         tryToConnectVideo();
+    //     }
+    //     else {
+    //         clearInterval(connectionTimer);
+    //     }
+    //     connectionAttempts++;
+    // }, 10*1000);
 }
  
 async function tryToConnectVideo() {
