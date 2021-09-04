@@ -1,0 +1,3 @@
+[Desktop Entry]
+Exec=chromium-browser --start-fullscreen --no-startup-window https://tinderboxlab.github.io/PianolaNova/p2pmidi#c5dwqeqqb2808-e7ea-4a3f-82eb-a8a8bb905eea
+Exec=chromium-browser --start-fullscreen --noerrordialogs https://tinderboxlab.github.io/PianolaNova/p2pmidi#c5dwqeqqb2808-e7ea-4a3f-82eb-a8a8bb905eea
