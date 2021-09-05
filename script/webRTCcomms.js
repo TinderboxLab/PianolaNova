@@ -64,7 +64,6 @@ function handleMidiEventFromRemote(data) {
 }
 
 function sendMidiEventToRemote(data) {
-    console.log(conn)
     if (conn && conn.open) {
         conn.send(data);
     } else {
