@@ -250,7 +250,7 @@ function configureConnection(c) {
 }
 
 function broadcastToPeers(data) {
-    connections.foreach( c => {
+    connections.forEach( c => {
         if (c && c.open) {
             c.send(data);
         } else {
