@@ -246,7 +246,7 @@ function createConnection() {
  */
 function configureConnection(c) { 
     c.on('data', function (data) {
-        remoteLocationName = getRemoteLocationName(label)
+        remoteLocationName = getRemoteLocationName(c.label)
         if (typeof(data)=== "string") {
             addMessage(remoteLocationName + ": " + msg, "peerMsg");
         } 
