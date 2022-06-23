@@ -27,9 +27,8 @@ function locationNameFromHash() {
     return location;
 }
 
-function getRemoteLocationName() {
-    if (locationName === "Leeds") return "Edinburgh";
-    if (locationName === "Edinburgh") return "Leeds";
+function getRemoteLocationName(label) {
+    if (label) return label;
     return "There";
 }
 
@@ -238,7 +237,7 @@ function createConnection() {
 function configureConnection(c) { 
     c.on('data', function (data) {
         if (typeof(data)=== "string") {
-            addMessage(remoteLocationName + ": " + msg, "peerMsg");
+            addMessage(getRemoteLocationName(c.label) + ": " + msg, "peerMsg");
         } 
         else if (typeof(data)=== "object") {
             handleMidiEventFromRemote(data);
