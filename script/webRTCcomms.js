@@ -201,7 +201,7 @@ function initialize() {
         peer.reconnect();
     });
     peer.on('close', function() {
-        conn = null;
+        //conn = null;
         status.innerHTML = "Connection destroyed. Please refresh";
         console.log('Connection destroyed');
         if (firstPeerCreated) initialize();
