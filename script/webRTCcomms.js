@@ -224,6 +224,7 @@ function createConnection() {
     // if (conn) {
     //     conn.close();
     // }
+    status.innerHTML = "";
     let connectionLabel = locationName + firstPeerId;
     oneway = (locationName == "oneway");
     connections.forEach (c => { 
