@@ -135,13 +135,13 @@ function initialize() {
     });
     peer.on('connection', function (c) {
         // Allow only a single connection
-        if (conn && conn.open) {
-            c.on('open', function() {
-                c.send("Already connected to another client");
-                setTimeout(function() { c.close(); }, 500);
-            });
-            return;
-        }
+        // if (conn && conn.open) {
+        //     c.on('open', function() {
+        //         c.send("Already connected to another client");
+        //         setTimeout(function() { c.close(); }, 500);
+        //     });
+        //     return;
+        // }
 
         conn = c;
         status.innerHTML = ""; //"Connected";
