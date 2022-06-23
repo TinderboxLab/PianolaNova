@@ -236,8 +236,9 @@ function createConnection() {
  */
 function configureConnection(c) { 
     c.on('data', function (data) {
+        remoteLocationName = getRemoteLocationName(c.label)
         if (typeof(data)=== "string") {
-            addMessage(getRemoteLocationName(c.label) + ": " + msg, "peerMsg");
+            addMessage(remoteLocationName + ": " + msg, "peerMsg");
         } 
         else if (typeof(data)=== "object") {
             handleMidiEventFromRemote(data);
