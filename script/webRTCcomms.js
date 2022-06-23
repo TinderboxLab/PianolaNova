@@ -4,7 +4,7 @@ var peer = null; // own peer object
 var firstPeerId = idFromHash();//"c5dwqeqqb2808-e7ea-4a3f-82eb-a8a8bb905eea";
 var locationName = locationNameFromHash();
 var remoteLocationName = getRemoteLocationName();
-var conn = null;
+var connections = [];
 var status = document.getElementById("status");
 var message = document.getElementById("message");
 var clearMsgsButton = document.getElementById("clearMsgsButton");
@@ -188,13 +188,12 @@ function initialize() {
         //     });
         //     return;
         // }
-
-        conn = c;
         status.innerHTML = ""; //"Connected";
         // if the firstPeer had NOT already been created when we created this one
         // then this is the first peer so call our ready function to set up the 
         // connection's event handlers
-        if (!firstPeerCreated) configureConnection;
+        if (!firstPeerCreated) configureConnection(c);
+        connections.push(c);
     });
     peer.on('disconnected', function () {
         status.innerHTML = "Connection lost. Please reconnect";
@@ -225,16 +224,17 @@ function createConnection() {
     }
     // create the connection. set the reliable flag so that it drops data 
     // rather than queing it (which will cause a backlog of MIDI data that all comes at once)
-    conn = peer.connect(firstPeerId, {
+    let c = peer.connect(firstPeerId, {
         reliable: false
     });
-    configureConnection();
+    configureConnection(c);
+    connections.push(c)
 };
 /**
  * Finish setting up the first peer after it was successfully connected to the PeerServer.
  */
-function configureConnection() { 
-    conn.on('data', function (data) {
+function configureConnection(c) { 
+    c.on('data', function (data) {
         if (typeof(data)=== "string") {
             addMessage(remoteLocationName + ": " + msg, "peerMsg");
         } 
@@ -242,19 +242,21 @@ function configureConnection() {
             handleMidiEventFromRemote(data);
         } 
     });
-    conn.on('close', function () {
+    c.on('close', function () {
         status.innerHTML = "Connection closed";
-        conn = null;
+        //conn = null;
     });
     connectVideo();
 }
 
 function broadcastToPeers(data) {
-    if (conn && conn.open) {
-        conn.send(data);
-    } else {
-        console.log('Connection is closed');
-    }
+    connections.foreach( c => {
+        if (c && c.open) {
+            c.send(data);
+        } else {
+            console.log('Connection is closed');
+        }
+    })
 }
 
 /**
