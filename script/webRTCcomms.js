@@ -188,6 +188,7 @@ function initialize() {
         //     });
         //     return;
         // }
+        console.log(c.label)
         status.innerHTML = ""; //"Connected";
         // if the firstPeer had NOT already been created when we created this one
         // then this is the first peer so call our ready function to set up the 
@@ -225,7 +226,8 @@ function createConnection() {
     // create the connection. set the reliable flag so that it drops data 
     // rather than queing it (which will cause a backlog of MIDI data that all comes at once)
     let c = peer.connect(firstPeerId, {
-        reliable: false
+        reliable: false,
+        label: locationName
     });
     configureConnection(c);
     connections.push(c)
