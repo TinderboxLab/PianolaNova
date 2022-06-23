@@ -5,6 +5,7 @@ var firstPeerId = idFromHash();//"c5dwqeqqb2808-e7ea-4a3f-82eb-a8a8bb905eea";
 var locationName = locationNameFromHash();
 var remoteLocationName = getRemoteLocationName();
 var connections = [];
+var oneWay = false;
 var status = document.getElementById("status");
 var message = document.getElementById("message");
 var clearMsgsButton = document.getElementById("clearMsgsButton");
@@ -27,8 +28,8 @@ function locationNameFromHash() {
     return location;
 }
 
-function getRemoteLocationName(label) {
-    if (label) return label;
+function getRemoteLocationName(metadata) {
+    if (metadata && metadata.sender) return metadata.sender;
     return "There";
 }
 
@@ -224,7 +225,7 @@ function createConnection() {
     //     conn.close();
     // }
     let connectionLabel = locationName + firstPeerId;
-    let oneway = (locationName == "oneway");
+    oneway = (locationName == "oneway");
     connections.forEach (c => { 
         if (c.label == connectionLabel) c.close()
     });
@@ -246,7 +247,7 @@ function createConnection() {
  */
 function configureConnection(c) { 
     c.on('data', function (data) {
-        remoteLocationName = getRemoteLocationName(c.label)
+        remoteLocationName = getRemoteLocationName(c.metadata)
         if (typeof(data)=== "string") {
             addMessage(remoteLocationName + ": " + msg, "peerMsg");
         } 
@@ -264,7 +265,7 @@ function configureConnection(c) {
 
 function broadcastToPeers(data) {
     connections.forEach( c => {
-        if (c && c.open && (c.metadata.oneway && c.metadata.sender == locationName)) {
+        if (c && c.open) {
             c.send(data);
         } else {
             console.log('Connection is closed');
