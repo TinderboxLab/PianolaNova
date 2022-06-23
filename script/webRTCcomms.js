@@ -174,7 +174,7 @@ function initialize() {
         }
         // if the firstPeer had already been created when we created this one, 
         // call our join function to establish a connection to it
-        if (firstPeerCreated) join();
+        if (firstPeerCreated) createConnection();
     });
     /** 
      *  called when a remote peer tries to connect to our ID
@@ -192,9 +192,9 @@ function initialize() {
         conn = c;
         status.innerHTML = ""; //"Connected";
         // if the firstPeer had NOT already been created when we created this one
-        // then this is the first peer so call our ready function to finish setting
-        // it up without trying to connect to another peer
-        if (!firstPeerCreated) ready();
+        // then this is the first peer so call our ready function to set up the 
+        // connection's event handlers
+        if (!firstPeerCreated) configureConnection;
     });
     peer.on('disconnected', function () {
         status.innerHTML = "Connection lost. Please reconnect";
@@ -218,7 +218,7 @@ function initialize() {
 /**
  * Create a connection to the firstPeer.
  */
-function join() {
+function createConnection() {
     // Close old connection
     if (conn) {
         conn.close();
@@ -228,11 +228,12 @@ function join() {
     conn = peer.connect(firstPeerId, {
         reliable: false
     });
-
-    conn.on('open', function () {
-        status.innerHTML = "" //"Connected";
-    });
-    // Handle incoming data 
+    configureConnection();
+};
+/**
+ * Finish setting up the first peer after it was successfully connected to the PeerServer.
+ */
+function configureConnection() { 
     conn.on('data', function (data) {
         if (typeof(data)=== "string") {
             addMessage(remoteLocationName + ": " + msg, "peerMsg");
@@ -243,23 +244,6 @@ function join() {
     });
     conn.on('close', function () {
         status.innerHTML = "Connection closed";
-    });
-    connectVideo();
-};
-/**
- * Finish setting up the first peer after it was successfully connected to the PeerServer.
- */
-function ready() { 
-    conn.on('data', function (data) {
-        if (typeof(data)=== "string") {
-            addMessage(remoteLocationName + ": " + msg, "peerMsg");
-        } 
-        else if (typeof(data)=== "object") {
-            handleMidiEventFromRemote(data);
-        } 
-    });
-    conn.on('close', function () {
-        status.innerHTML = "Connection reset<br>Awaiting connection...";
         conn = null;
     });
     connectVideo();
