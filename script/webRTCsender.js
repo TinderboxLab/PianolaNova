@@ -59,7 +59,7 @@ function describeData(data) {
 }
 
 testMidiButton.addEventListener('click', function () {
-    const data = [144, 60, 120];
+    const data = [144, 48, 120];
     sendMidiEventToRemote(data);
 });
 
