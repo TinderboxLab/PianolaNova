@@ -187,11 +187,12 @@ function initialize() {
         //     });
         //     return;
         // }
-        console.log(c.label)
+
         status.innerHTML = ""; //"Connected";
         // if the firstPeer had NOT already been created when we created this one
         // then this is the first peer so call our ready function to set up the 
         // connection's event handlers
+        
         if (!firstPeerCreated) configureConnection(c);
         connections.push(c);
     });
@@ -222,11 +223,19 @@ function createConnection() {
     // if (conn) {
     //     conn.close();
     // }
+    let connectionLabel = locationName + firstPeerId;
+    let oneway = (locationName == "oneway");
+    connections.forEach (c => { 
+        if (c.label == connectionLabel) c.close()
+    });
     // create the connection. set the reliable flag so that it drops data 
     // rather than queing it (which will cause a backlog of MIDI data that all comes at once)
     let c = peer.connect(firstPeerId, {
         reliable: false,
-        label: locationName
+        label: connectionLabel,
+        metadata: {
+            oneway: oneway
+        }
     });
     configureConnection(c);
     connections.push(c)
@@ -236,7 +245,7 @@ function createConnection() {
  */
 function configureConnection(c) { 
     c.on('data', function (data) {
-        remoteLocationName = getRemoteLocationName(c.label)
+        remoteLocationName = getRemoteLocationName(label)
         if (typeof(data)=== "string") {
             addMessage(remoteLocationName + ": " + msg, "peerMsg");
         } 
@@ -248,12 +257,13 @@ function configureConnection(c) {
         status.innerHTML = "Connection closed";
         //conn = null;
     });
-    connectVideo();
+    
+    if (!c.metadata.oneway) connectVideo();
 }
 
 function broadcastToPeers(data) {
     connections.forEach( c => {
-        if (c && c.open) {
+        if (c && c.open && !c.metadata.oneway) {
             c.send(data);
         } else {
             console.log('Connection is closed');
