@@ -234,7 +234,8 @@ function createConnection() {
         reliable: false,
         label: connectionLabel,
         metadata: {
-            oneway: oneway
+            oneway: oneway,
+            sender: locationName
         }
     });
     configureConnection(c);
@@ -263,7 +264,7 @@ function configureConnection(c) {
 
 function broadcastToPeers(data) {
     connections.forEach( c => {
-        if (c && c.open && !c.metadata.oneway) {
+        if (c && c.open && (c.metadata.oneway && c.metadata.sender == locationName)) {
             c.send(data);
         } else {
             console.log('Connection is closed');
