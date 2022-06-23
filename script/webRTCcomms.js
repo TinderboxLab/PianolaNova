@@ -219,9 +219,9 @@ function initialize() {
  */
 function createConnection() {
     // Close old connection
-    if (conn) {
-        conn.close();
-    }
+    // if (conn) {
+    //     conn.close();
+    // }
     // create the connection. set the reliable flag so that it drops data 
     // rather than queing it (which will cause a backlog of MIDI data that all comes at once)
     let c = peer.connect(firstPeerId, {
