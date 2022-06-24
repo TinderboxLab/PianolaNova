@@ -29,7 +29,7 @@ function locationNameFromHash() {
 }
 
 function getRemoteLocationName(metadata) {
-    if (metadata && metadata.sender) return metadata.sender;
+    if (metadata && metadata.sender && metadata.sender != locationName) return metadata.sender;
     return "There";
 }
 
