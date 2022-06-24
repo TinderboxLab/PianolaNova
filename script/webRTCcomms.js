@@ -4,6 +4,7 @@ var peer = null; // own peer object
 var firstPeerId = idFromHash();//"c5dwqeqqb2808-e7ea-4a3f-82eb-a8a8bb905eea";
 var locationName = locationNameFromHash();
 var remoteLocationName = getRemoteLocationName();
+var connectionId = createConnectionId();
 var connections = [];
 var oneway = false;
 var status = document.getElementById("status");
@@ -26,6 +27,14 @@ function locationNameFromHash() {
     const hashSplit = window.location.hash.split("@");
     const location = (hashSplit.length > 1)? hashSplit[1] : "Here";
     return location;
+}
+
+function createConnectionId() {
+    let array = new Uint32Array(1);
+    window.crypto.getRandomValues(array);
+    const id = new TextDecoder().decode(array);
+    console.log(array ,id )
+    return id
 }
 
 function getRemoteLocationName(metadata) {
@@ -173,7 +182,7 @@ function initialize() {
             lastPeerId = peer.id;
         }
         // if the firstPeer had already been created when we created this one, 
-        // call our join function to establish a connection to it
+        // call our createConnection function to establish a connection to it
         if (firstPeerCreated) createConnection();
     });
     /** 
@@ -190,10 +199,10 @@ function initialize() {
         // }
 
         status.innerHTML = ""; //"Connected";
+
         // if the firstPeer had NOT already been created when we created this one
-        // then this is the first peer so call our ready function to set up the 
-        // connection's event handlers
-        
+        // then this is the first peer and a new incoming connection so  
+        // we need to call our configureConnection function to set up the connection's event handlers
         if (!firstPeerCreated) configureConnection(c);
         connections.push(c);
     });
@@ -220,21 +229,22 @@ function initialize() {
  * Create a connection to the firstPeer.
  */
 function createConnection() {
-    // Close old connection
-    // if (conn) {
-    //     conn.close();
-    // }
+    // Close and remove the old connection
+    let oldConnection = connections.find(c => c.label == connectionId);
+    if (oldConnection) {
+        oldConnection.close();
+    }
+
     status.innerHTML = "";
-    let connectionLabel = locationName + firstPeerId;
+
+    // for testing
     oneway = (locationName == "oneway");
-    connections.forEach (c => { 
-        if (c.label == connectionLabel) c.close()
-    });
+
     // create the connection. set the reliable flag so that it drops data 
     // rather than queing it (which will cause a backlog of MIDI data that all comes at once)
     let c = peer.connect(firstPeerId, {
         reliable: false,
-        label: connectionLabel,
+        label: connectionId,
         metadata: {
             oneway: oneway,
             sender: locationName
@@ -258,7 +268,8 @@ function configureConnection(c) {
     });
     c.on('close', function () {
         status.innerHTML = "Connection closed";
-        //conn = null;
+        //remove the connection
+        connections = connections.filter(conn => conn.label != c.label);
     });
     
     if (!c.metadata.oneway) connectVideo();
