@@ -32,9 +32,7 @@ function locationNameFromHash() {
 function createConnectionId() {
     let array = new Uint32Array(1);
     window.crypto.getRandomValues(array);
-    const id = new TextDecoder().decode(array);
-    console.log(array ,id )
-    return id
+    return array.toString();
 }
 
 function getRemoteLocationName(metadata) {
