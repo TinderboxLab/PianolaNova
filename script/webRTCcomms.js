@@ -68,10 +68,12 @@ function sendMidiEventToLocal(data) {
     Object.values(midi.outputs).forEach((output) => {
         output.send( midiMessage );  //omitting the timestamp means send immediately.
     })
+    sendToLEDServer(midiMessage)
 }
 
 function handleMidiEventFromRemote(data) {
     sendMidiEventToLocal(data)
+
     const msg = describeData(data);
     if (msg) addMessage(remoteLocationName + ": " + msg, "peerMsg");
 }
@@ -331,6 +333,21 @@ async function tryToConnectVideo() {
     } catch(err) {
         /* handle the error */
     }
+}
+
+/**
+ * LEDs
+ */
+
+function sendToLEDServer(data) {
+    let postData = (data[0] == 144)? "value=On":"value=Off"
+    fetch("http://127.0.0.1:8000", {
+        method: "POST",
+        headers: {'Content-Type': 'text/plain'}, 
+        body: postData
+      }).then(res => {
+        console.log("Request complete! response:", res);
+      });
 }
  
 // Since all our callbacks are setup, start the process of obtaining an ID
