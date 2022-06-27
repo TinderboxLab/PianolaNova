@@ -10,3 +10,8 @@ when connecting to a 2.4ghz network there can be interference from HDMI. Changin
 ## testing MIDI
 
 Pressing the "m" key will send a note to the remote
+
+## LED Server on the PIs
+
+Installation: 
+```sudo pip3 install rpi_ws281x adafruit-circuitpython-neopixel```
