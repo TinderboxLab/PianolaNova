@@ -340,11 +340,10 @@ async function tryToConnectVideo() {
  */
 
 function sendToLEDServer(data) {
-    let postData = (data[0] == 144)? "value=On":"value=Off"
     fetch("http://127.0.0.1:8000", {
         method: "POST",
         headers: {'Content-Type': 'text/plain'}, 
-        body: postData
+        body: data.toString()
       }).then(res => {
         console.log("Request complete! response:", res);
       });
