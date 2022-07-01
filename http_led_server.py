@@ -3,6 +3,7 @@
 import board
 import neopixel
 import os
+import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 host_name = '127.0.0.1'  # IP Address of Raspberry Pi
@@ -20,11 +21,15 @@ class MyServer(BaseHTTPRequestHandler):
 
         if post_data[0] == '144':
             pixels[ledNum] = (0, 255, 0)
+            timer = threading.Timer(0.2, self.noteOff,[ledNum])
+            timer.start()
         else:
             pixels[ledNum] = (0,0,0)
 
         print("LED is {}".format(ledNum))
 
+    def noteOff(self, num):
+        pixels[num] = (0,0,0)
 # # # # # Main # # # # #
 
 if __name__ == '__main__':
